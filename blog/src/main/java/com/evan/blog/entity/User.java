@@ -1,12 +1,12 @@
 package com.evan.blog.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+//
+//import jakarta.persistence.*;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "user")
-@JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
+//@Entity
+//@Table(name = "user")
+//@JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
 
 public class User {
     int id;
