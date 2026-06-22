@@ -1,21 +1,10 @@
 <template>
   <div class="about-page">
-
     <div class="ui top attached segment about-card">
-
       <h2 class="about-title">关于帅气的 LuckyCat</h2>
-
-      <div class="music-box">
-        <meting-js server="netease" type="song" :id="359571" theme="#25CCF7">
-        </meting-js>
-      </div>
-
       <div class="about-divider"></div>
-
       <div class="typo content about-content" v-html="about.content"></div>
-
     </div>
-
   </div>
 </template>
 
@@ -89,9 +78,6 @@ const about = reactive({
   color: #333;
 }
 
-.music-box {
-  margin: 20px 0;
-}
 
 .about-divider {
   height: 1px;

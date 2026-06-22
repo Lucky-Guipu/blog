@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router'
 import NavMenu from './components/common/NavMenu.vue'
 import Introduction from './components/sidebar/Introduction.vue'
+import Music from './components/sidebar/Music.vue';
 const route = useRoute()
 </script>
 
@@ -29,10 +30,7 @@ const route = useRoute()
 
           <!-- 右边 -->
           <div class="three wide column m-mobile-hide">
-            <!-- <RandomBlog :randomBlogList="randomBlogList" :class="{ 'm-display-none': focusMode }" />
-          <Tags :tagList="tagList" :class="{ 'm-display-none': focusMode }" /> -->
-            <!--只在文章页面显示目录-->
-            <!-- <Tocbot v-if="$route.name === 'blog'" /> -->
+            <Music :class="{ 'm-display-none': focusMode }" />
           </div>
         </div>
       </div>
