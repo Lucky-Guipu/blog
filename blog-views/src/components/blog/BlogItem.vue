@@ -18,9 +18,9 @@
 							<div class="item m-datetime">
 								<i class="small calendar icon"></i><span>{{ dateFormat(item.createTime,'YYYY-MM-DD') }}</span>
 							</div>
-							<div class="item m-views">
+							<!-- <div class="item m-views">
 								<i class="small eye icon"></i><span>{{ item.views }}</span>
-							</div>
+							</div> -->
 							<div class="item m-common-black">
 								<i class="small pencil alternate icon"></i><span>字数≈{{ item.words }}字</span>
 							</div>
@@ -30,9 +30,9 @@
 						</div>
 					</div>
 					<!--分类-->
-					<router-link :to="`/category/${item.category.name}`" class="ui orange large ribbon label">
+					<!-- <router-link :to="`/category/${item.category.name}`" class="ui orange large ribbon label">
 						<i class="small folder open icon"></i><span class="m-text-500">{{ item.category.name }}</span>
-					</router-link>
+					</router-link> -->
 					<!--文章Markdown描述-->
 					<div class="typo m-padded-tb-small line-numbers match-braces rainbow-braces" v-html="item.description"></div>
 					<!--阅读全文按钮-->
