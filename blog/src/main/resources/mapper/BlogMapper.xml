@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.evan.mapper.BlogMapper">
+
+    <!-- 博客信息结果映射 -->
+    <resultMap id="blogInfoMap" type="com.evan.model.vo.BlogInfo">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="views" column="views"/>
+        <result property="words" column="words"/>
+        <result property="readTime" column="read_time"/>
+        <result property="top" column="is_top"/>
+        <result property="password" column="password"/>
+        <result property="privacy" column="privacy"/>
+        <association property="category" javaType="com.evan.entity.Category">
+            <id property="id" column="c_id"/>
+            <result property="name" column="c_name"/>
+        </association>
+    </resultMap>
+
+    <!-- 博客信息结果映射（含标签） -->
+    <resultMap id="blogInfoWithTags" type="com.evan.model.vo.BlogInfo" extends="blogInfoMap">
+        <collection property="tags" ofType="com.evan.entity.Tag">
+            <id property="id" column="t_id"/>
+            <result property="name" column="t_name"/>
+            <result property="color" column="t_color"/>
+        </collection>
+    </resultMap>
+
+    <!-- 查询已发布博客简要信息列表（含分类和标签） -->
+    <select id="getBlogInfoListByIsPublished" resultMap="blogInfoWithTags">
+        select b.id, b.title, b.description, b.create_time, b.views, b.words, b.read_time,
+               b.is_top, b.password, (not b.is_published) as privacy,
+               c.id as c_id, c.category_name as c_name,
+               t.id as t_id, t.tag_name as t_name, t.color as t_color
+        from blog b
+        left join category c on b.category_id = c.id
+        left join blog_tag bt on b.id = bt.blog_id
+        left join tag t on bt.tag_id = t.id
+        where b.is_published = true
+        order by b.is_top desc, b.create_time desc
+    </select>
+
+    <!-- 按分类名查询 -->
+    <select id="getBlogInfoListByCategoryNameAndIsPublished" resultMap="blogInfoWithTags">
+        select b.id, b.title, b.description, b.create_time, b.views, b.words, b.read_time,
+               b.is_top, b.password, (not b.is_published) as privacy,
+               c.id as c_id, c.category_name as c_name,
+               t.id as t_id, t.tag_name as t_name, t.color as t_color
+        from blog b
+        left join category c on b.category_id = c.id
+        left join blog_tag bt on b.id = bt.blog_id
+        left join tag t on bt.tag_id = t.id
+        where b.is_published = true and c.category_name = #{categoryName}
+        order by b.is_top desc, b.create_time desc
+    </select>
+
+    <!-- 按标签名查询 -->
+    <select id="getBlogInfoListByTagNameAndIsPublished" resultMap="blogInfoWithTags">
+        select b.id, b.title, b.description, b.create_time, b.views, b.words, b.read_time,
+               b.is_top, b.password, (not b.is_published) as privacy,
+               c.id as c_id, c.category_name as c_name,
+               t.id as t_id, t.tag_name as t_name, t.color as t_color
+        from blog b
+        left join category c on b.category_id = c.id
+        left join blog_tag bt on b.id = bt.blog_id
+        left join tag t on bt.tag_id = t.id
+        where b.is_published = true
+        and b.id in (
+            select bt2.blog_id from blog_tag bt2
+            left join tag t2 on bt2.tag_id = t2.id
+            where t2.tag_name = #{tagName}
+        )
+        order by b.is_top desc, b.create_time desc
+    </select>
+
+    <!-- 关键字搜索 -->
+    <select id="getSearchBlogListByQueryAndIsPublished" resultType="com.evan.model.vo.SearchBlog">
+        select id, title, content from blog
+        where is_published = true and password is null
+        and (title like concat('%', #{query}, '%') or content like concat('%', #{query}, '%'))
+    </select>
+
+    <!-- 最新公开博客 -->
+    <select id="getNewBlogListByIsPublished" resultType="com.evan.model.vo.NewBlog">
+        select id, title, create_time as createTime from blog
+        where is_published = true
+        order by create_time desc limit 3
+    </select>
+
+    <!-- 随机推荐博客 -->
+    <select id="getRandomBlogListByLimitNumAndIsPublishedAndIsRecommend" resultType="com.evan.model.vo.RandomBlog">
+        select id, title, first_picture as firstPicture, create_time as createTime, password
+        from blog
+        where is_published = true and is_recommend = true
+        order by rand() limit 5
+    </select>
+
+    <!-- 按ID查询 -->
+    <select id="getBlogById" resultType="com.evan.entity.Blog">
+        select * from blog where id = #{id}
+    </select>
+
+    <!-- 查询博客密码 -->
+    <select id="getBlogPassword" resultType="java.lang.String">
+        select password from blog where id = #{blogId}
+    </select>
+
+    <!-- 查询评论开关 -->
+    <select id="getCommentEnabledByBlogId" resultType="java.lang.Boolean">
+        select is_comment_enabled from blog where id = #{blogId}
+    </select>
+
+    <!-- 查询公开状态 -->
+    <select id="getPublishedByBlogId" resultType="java.lang.Boolean">
+        select is_published from blog where id = #{blogId}
+    </select>
+
+    <!-- 获取博客标题 -->
+    <select id="getTitleByBlogId" resultType="java.lang.String">
+        select title from blog where id = #{id}
+    </select>
+
+    <!-- ID和标题列表 -->
+    <select id="getIdAndTitleList" resultType="com.evan.entity.Blog">
+        select id, title from blog order by create_time desc
+    </select>
+
+    <!-- 按标题和分类ID搜索 -->
+    <select id="getListByTitleAndCategoryId" resultType="com.evan.entity.Blog">
+        select * from blog
+        <where>
+            <if test="title != null and title != ''">
+                and title like concat('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!-- 归档：按年月分组 -->
+    <select id="getGroupYearMonthByIsPublished" resultType="java.lang.String">
+        select date_format(create_time, '%Y年%m月') as yearMonth
+        from blog
+        where is_published = true
+        group by yearMonth
+        order by yearMonth desc
+    </select>
+
+    <!-- 归档：按年月获取博客列表 -->
+    <select id="getBlogListByYearMonthAndIsPublished" resultType="com.evan.entity.Blog">
+        select * from blog
+        where is_published = true and date_format(create_time, '%Y年%m月') = #{yearMonth}
+        order by create_time desc
+    </select>
+
+    <!-- 删除博客 -->
+    <delete id="deleteBlogById">
+        delete from blog where id = #{id}
+    </delete>
+
+    <!-- 删除博客标签关联 -->
+    <delete id="deleteBlogTagByBlogId">
+        delete from blog_tag where blog_id = #{blogId}
+    </delete>
+
+    <!-- 新增博客 -->
+    <insert id="saveBlog" parameterType="com.evan.model.dto.Blog" useGeneratedKeys="true" keyProperty="id">
+        insert into blog (title, first_picture, content, description, is_published, is_recommend,
+                          is_appreciation, is_comment_enabled, is_top, create_time, update_time,
+                          views, words, read_time, category_id, password, user_id)
+        values (#{title}, #{firstPicture}, #{content}, #{description}, #{published}, #{recommend},
+                #{appreciation}, #{commentEnabled}, #{top}, now(), now(),
+                0, #{words}, #{readTime}, #{cateId}, #{password}, #{userId})
+    </insert>
+
+    <!-- 新增博客标签关联 -->
+    <insert id="saveBlogTag">
+        insert into blog_tag (blog_id, tag_id) values (#{blogId}, #{tagId})
+    </insert>
+
+    <!-- 更新推荐状态 -->
+    <update id="updateBlogRecommendById">
+        update blog set is_recommend = #{recommend} where id = #{blogId}
+    </update>
+
+    <!-- 更新可见性 -->
+    <update id="updateBlogVisibilityById">
+        update blog set is_published = #{blogVisibility.published},
+                        is_appreciation = #{blogVisibility.appreciation},
+                        is_recommend = #{blogVisibility.recommend},
+                        is_comment_enabled = #{blogVisibility.commentEnabled},
+                        is_top = #{blogVisibility.top},
+                        password = #{blogVisibility.password}
+        where id = #{blogId}
+    </update>
+
+    <!-- 更新置顶 -->
+    <update id="updateBlogTopById">
+        update blog set is_top = #{top} where id = #{blogId}
+    </update>
+
+    <!-- 更新浏览量 -->
+    <update id="updateViews">
+        update blog set views = #{views} where id = #{blogId}
+    </update>
+
+    <!-- 更新博客 -->
+    <update id="updateBlog" parameterType="com.evan.model.dto.Blog">
+        update blog set title = #{title}, first_picture = #{firstPicture}, content = #{content},
+                        description = #{description}, is_published = #{published},
+                        is_recommend = #{recommend}, is_appreciation = #{appreciation},
+                        is_comment_enabled = #{commentEnabled}, is_top = #{top},
+                        update_time = now(), words = #{words}, read_time = #{readTime},
+                        category_id = #{cateId}, password = #{password}
+        where id = #{id}
+    </update>
+
+    <!-- 统计博客总数 -->
+    <select id="countBlog" resultType="java.lang.Integer">
+        select count(*) from blog
+    </select>
+
+    <select id="countBlogByIsPublished" resultType="java.lang.Integer">
+        select count(*) from blog where is_published = true
+    </select>
+
+    <select id="countBlogByCategoryId" resultType="java.lang.Integer">
+        select count(*) from blog where category_id = #{categoryId}
+    </select>
+
+    <select id="countBlogByTagId" resultType="java.lang.Integer">
+        select count(*) from blog_tag where tag_id = #{tagId}
+    </select>
+
+    <!-- 查询分类 -->
+    <select id="getCategoryById" resultType="com.evan.entity.Category">
+        select id, category_name as name from category where id = #{id}
+    </select>
+
+    <select id="getCategoryByName" resultType="com.evan.entity.Category">
+        select id, category_name as name from category where category_name = #{name}
+    </select>
+
+    <!-- 查询博客的标签列表 -->
+    <select id="getTagListByBlogId" resultType="com.evan.entity.Tag">
+        select t.id, t.tag_name as name, t.color
+        from tag t
+        left join blog_tag bt on t.id = bt.tag_id
+        where bt.blog_id = #{blogId}
+    </select>
+
+    <!-- 查询博客的 category_id -->
+    <select id="getCategoryIdByBlogId" resultType="java.lang.Long">
+        select category_id from blog where id = #{blogId}
+    </select>
+
+</mapper>
