@@ -1,12 +1,12 @@
 <template>
   <div class="container">
-    <div class="block text-center">
+    <!-- <div class="block text-center">
       <el-carousel trigger="click" height="265px" motion-blur>
         <el-carousel-item v-for="(img, index) in carouselImages" :key="index">
           <img :src="img" alt="轮播图" style="width: 100%; height: 100%; object-fit: cover;" />
         </el-carousel-item>
       </el-carousel>
-    </div>
+    </div> -->
     <BlogList :getBlogList="getBlogList" :blogList="blogList" :totalPage="totalPage"/>
   </div>
 </template>
@@ -25,12 +25,12 @@
         blogList: [],
         totalPage: 0,
         getBlogListFinish: false,
-        carouselImages: [
-          '/banner/IMG_20251231_211548.jpg',
-          '/banner/IMG_20260120_090002.jpg',
-          '/banner/IMG_20260211_154251.jpg',
-          '/banner/IMG_20240614_071055.jpg',
-        ]
+        // carouselImages: [
+        //   '/banner/IMG_20251231_211548.jpg',
+        //   '/banner/IMG_20260120_090002.jpg',
+        //   '/banner/IMG_20260211_154251.jpg',
+        //   '/banner/IMG_20240614_071055.jpg',
+        // ]
       }
     },
     beforeRouteEnter(to, from, next) {

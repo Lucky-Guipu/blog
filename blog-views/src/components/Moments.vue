@@ -1,14 +1,21 @@
 <template>
   <div class="moments-page">
+    
     <div class="ui top attached segment moments-card">
       <h2 class="moments-title">我的动态</h2>
       <!-- <div class="moments-divider"></div> -->
     </div>
+
+    <div>
+    </div>
+
   </div>
 </template>
 
+
 <script setup>
 </script>
+
 
 <style>
 .moments-title {

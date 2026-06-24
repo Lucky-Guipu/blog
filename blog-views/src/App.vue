@@ -6,10 +6,24 @@ import Introduction from './components/sidebar/Introduction.vue'
 import Music from './components/sidebar/Music.vue';
 const route = useRoute()
 const focusMode = ref(false)
+const carouselImages = [
+  '/banner/IMG_20251231_211548.jpg',
+  '/banner/IMG_20260120_090002.jpg',
+  '/banner/IMG_20260211_154251.jpg',
+  '/banner/IMG_20240614_071055.jpg',
+]
 </script>
 
 <template>
   <nav-menu class="nav-menu"></nav-menu>
+
+  <div class="block text-center" v-if="route.path === '/home'">
+    <el-carousel trigger="click" height="265px" motion-blur>
+      <el-carousel-item v-for="(img, index) in carouselImages" :key="index">
+        <img :src="img" alt="轮播图" style="width: 100%; height: 100%; object-fit: cover;" />
+      </el-carousel-item>
+    </el-carousel>
+  </div>
 
   <router-view v-if="route.path === '/login'" />
 

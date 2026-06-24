@@ -1,15 +1,17 @@
 <template>
   <div>
+    
     <el-menu :default-active="currentPath" router mode="horizontal" background-color="white" text-color="#222"
       active-text-color="red" style="min-width: 1300px">
+      
+      <!--  title -->
+      <span style="padding-left: 10%; padding-right: 20px; padding-top: 20px; font-size: 20px;font-weight: bold">
+        Lucky-blog
+      </span>
+      
       <el-menu-item v-for="(item, i) in navList" :key="i" :index="item.name">
         {{ item.navItem }}
       </el-menu-item>
-
-      <!--  title -->
-      <!-- <span style="position: absolute;padding-top: 20px;right: 43%;font-size: 20px;font-weight: bold">
-        White Jotter - Your Mind Palace
-      </span> -->
 
       <el-input placeholder="快速搜索..." prefix-icon="Search" size="default"
         style="width: 300px;position:absolute;margin-top: 12px;right: 18%" v-model="keywords">
